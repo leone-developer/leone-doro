@@ -9,7 +9,7 @@ const Hero = () => {
     <div className="relative h-screen w-full overflow-hidden">
       {/* Hero Image */}
       <Image
-        src="/images/golden-hero.png"
+        src="/images/golden-hero.webp"
         alt="Leone D'Oro Jewelry"
         fill
         priority
