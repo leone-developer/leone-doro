@@ -1,0 +1,22 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "tailwind.config.js",
+    "css": "src/styles/globals.css",
+    "baseColor": "slate",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@/modules/common/components",
+    "utils": "@/lib/util",
+    "ui": "@/modules/common/components/ui"
+  },
+  "registries": {
+    "@aceternity": "https://ui.aceternity.com/registry/{name}.json"
+  }
+}

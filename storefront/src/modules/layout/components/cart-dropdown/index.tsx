@@ -2,6 +2,7 @@
 
 import { Popover, Transition } from "@headlessui/react"
 import { Button } from "@medusajs/ui"
+import { IconShoppingBag } from "@tabler/icons-react"
 import { usePathname } from "next/navigation"
 import { Fragment, useEffect, useRef, useState } from "react"
 
@@ -78,10 +79,18 @@ const CartDropdown = ({
       <Popover className="relative h-full">
         <Popover.Button className="h-full">
           <LocalizedClientLink
-            className="hover:text-ui-fg-base"
+            className="hover:text-[#D4AF37] transition-colors relative flex items-center gap-2"
             href="/cart"
             data-testid="nav-cart-link"
-          >{`Cart (${totalItems})`}</LocalizedClientLink>
+            aria-label="Coș de cumpărături"
+          >
+            <IconShoppingBag className="h-5 w-5" stroke={1.5} />
+            {totalItems > 0 && (
+              <span className="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                {totalItems}
+              </span>
+            )}
+          </LocalizedClientLink>
         </Popover.Button>
         <Transition
           show={cartDropdownOpen}
@@ -98,8 +107,8 @@ const CartDropdown = ({
             className="hidden small:block absolute top-[calc(100%+1px)] right-0 bg-white border-x border-b border-gray-200 w-[420px] text-ui-fg-base"
             data-testid="nav-cart-dropdown"
           >
-            <div className="p-4 flex items-center justify-center">
-              <h3 className="text-large-semi">Cart</h3>
+            <div className="p-4 flex items-center justify-center border-b border-gray-200">
+              <h3 className="text-large-semi">Coș de Cumpărături</h3>
             </div>
             {cartState && cartState.items?.length ? (
               <>
@@ -147,7 +156,7 @@ const CartDropdown = ({
                                   data-testid="cart-item-quantity"
                                   data-value={item.quantity}
                                 >
-                                  Quantity: {item.quantity}
+                                  Cantitate: {item.quantity}
                                 </span>
                               </div>
                               <div className="flex justify-end">
@@ -160,7 +169,7 @@ const CartDropdown = ({
                             className="mt-1"
                             data-testid="cart-item-remove-button"
                           >
-                            Remove
+                            Șterge
                           </DeleteButton>
                         </div>
                       </div>
@@ -170,7 +179,7 @@ const CartDropdown = ({
                   <div className="flex items-center justify-between">
                     <span className="text-ui-fg-base font-semibold">
                       Subtotal{" "}
-                      <span className="font-normal">(excl. taxes)</span>
+                      <span className="font-normal">(fără taxe)</span>
                     </span>
                     <span
                       className="text-large-semi"
@@ -189,7 +198,7 @@ const CartDropdown = ({
                       size="large"
                       data-testid="go-to-cart-button"
                     >
-                      Go to cart
+                      Vezi Coșul
                     </Button>
                   </LocalizedClientLink>
                 </div>
@@ -200,12 +209,12 @@ const CartDropdown = ({
                   <div className="bg-gray-900 text-small-regular flex items-center justify-center w-6 h-6 rounded-full text-white">
                     <span>0</span>
                   </div>
-                  <span>Your shopping bag is empty.</span>
+                  <span>Coșul tău este gol.</span>
                   <div>
                     <LocalizedClientLink href="/store">
                       <>
-                        <span className="sr-only">Go to all products page</span>
-                        <Button onClick={close}>Explore products</Button>
+                        <span className="sr-only">Mergi la pagina cu toate produsele</span>
+                        <Button onClick={close}>Explorează Produsele</Button>
                       </>
                     </LocalizedClientLink>
                   </div>

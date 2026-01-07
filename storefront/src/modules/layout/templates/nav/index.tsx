@@ -1,70 +1,177 @@
-import { Suspense } from "react"
+"use client"
 
-import { listRegions } from "@lib/data/regions"
-import { StoreRegion } from "@medusajs/types"
+import { useState, useEffect } from "react"
+import Image from "next/image"
+import { IconSearch, IconUser, IconShoppingBag, IconMenu2, IconX } from "@tabler/icons-react"
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "motion/react"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import CartButton from "@modules/layout/components/cart-button"
-import SideMenu from "@modules/layout/components/side-menu"
 
-export default async function Nav() {
-  const regions = await listRegions().then((regions: StoreRegion[]) => regions)
+// Menu items in Romanian
+const menuItems = [
+  { name: "Toate Produsele", link: "/store" },
+  { name: "Bijuterii", link: "/categories/bijuterii" },
+  { name: "Inele de Logodnă", link: "/categories/inele-de-logodna" },
+  { name: "Verighete", link: "/categories/verighete" },
+  { name: "Contact", link: "/contact" },
+]
+
+const Nav = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
+  const { scrollY } = useScroll()
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    setIsScrolled(latest > 50)
+  })
 
   return (
-    <div className="sticky top-0 inset-x-0 z-50 group">
-      <header className="relative h-16 mx-auto border-b duration-200 bg-white border-ui-border-base">
-        <nav className="content-container txt-xsmall-plus text-ui-fg-subtle flex items-center justify-between w-full h-full text-small-regular">
-          <div className="flex-1 basis-0 h-full flex items-center">
-            <div className="h-full">
-              <SideMenu regions={regions} />
-            </div>
-          </div>
+    <motion.header
+      className="sticky top-0 z-50 transition-all duration-300"
+      animate={{
+        backgroundColor: isScrolled ? "rgba(255, 255, 255, 0.8)" : "rgba(255, 255, 255, 1)",
+        backdropFilter: isScrolled ? "blur(10px)" : "blur(0px)",
+        borderBottomColor: isScrolled ? "#D4AF37" : "#E5E7EB",
+        boxShadow: isScrolled
+          ? "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+          : "none",
+      }}
+      style={{
+        borderBottomWidth: "1px",
+        borderBottomStyle: "solid",
+      }}
+    >
+      <nav className="content-container flex items-center justify-between h-20">
+        {/* Mobile Menu Button - Left */}
+        <button
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="small:hidden text-gray-900 hover:text-[#D4AF37] transition-colors"
+          aria-label="Meniu"
+        >
+          <motion.div
+            initial={false}
+            animate={{ rotate: isMenuOpen ? 90 : 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {isMenuOpen ? (
+              <IconX className="h-6 w-6" stroke={1.5} />
+            ) : (
+              <IconMenu2 className="h-6 w-6" stroke={1.5} />
+            )}
+          </motion.div>
+        </button>
 
-          <div className="flex items-center h-full">
+        {/* Logo - Center on Mobile, Left on Desktop */}
+        <LocalizedClientLink
+          href="/"
+          className="flex items-center small:flex-1"
+          data-testid="nav-store-link"
+        >
+          <Image
+            src="/images/logo.png"
+            alt="Leone D'Oro"
+            width={120}
+            height={40}
+            className="h-10 w-auto"
+            priority
+            unoptimized
+          />
+        </LocalizedClientLink>
+
+        {/* Desktop Menu - Center */}
+        <div className="hidden small:flex items-center gap-8 flex-1 justify-center">
+          {menuItems.map((item) => (
             <LocalizedClientLink
-              href="/"
-              className="txt-compact-xlarge-plus hover:text-ui-fg-base uppercase"
-              data-testid="nav-store-link"
+              key={item.name}
+              href={item.link}
+              className="text-sm font-medium text-gray-900 hover:text-[#D4AF37] transition-colors whitespace-nowrap"
             >
-              Medusa Store
+              {item.name}
             </LocalizedClientLink>
-          </div>
+          ))}
+        </div>
 
-          <div className="flex items-center gap-x-6 h-full flex-1 basis-0 justify-end">
-            <div className="hidden small:flex items-center gap-x-6 h-full">
-              {process.env.NEXT_PUBLIC_FEATURE_SEARCH_ENABLED && (
+        {/* Utility Icons - Right */}
+        <div className="flex items-center gap-4 small:gap-6 small:flex-1 justify-end">
+          {/* Search - Desktop Only */}
+          <LocalizedClientLink
+            href="/search"
+            className="hidden small:block text-gray-900 hover:text-[#D4AF37] transition-colors"
+            scroll={false}
+            data-testid="nav-search-link"
+            aria-label="Caută bijuterii"
+          >
+            <IconSearch className="h-5 w-5" stroke={1.5} />
+          </LocalizedClientLink>
+
+          {/* Account - Desktop Only */}
+          <LocalizedClientLink
+            href="/account"
+            className="hidden small:block text-gray-900 hover:text-[#D4AF37] transition-colors"
+            data-testid="nav-account-link"
+            aria-label="Contul Meu"
+          >
+            <IconUser className="h-5 w-5" stroke={1.5} />
+          </LocalizedClientLink>
+
+          {/* Cart - Always Visible */}
+          <LocalizedClientLink
+            href="/cart"
+            className="text-gray-900 hover:text-[#D4AF37] transition-colors"
+            data-testid="nav-cart-link"
+            aria-label="Coș de cumpărături"
+          >
+            <IconShoppingBag className="h-5 w-5" stroke={1.5} />
+          </LocalizedClientLink>
+        </div>
+      </nav>
+
+      {/* Mobile Menu Dropdown */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="small:hidden border-t border-gray-200 bg-white overflow-hidden"
+          >
+            <div className="content-container py-6 flex flex-col gap-4">
+              {menuItems.map((item) => (
                 <LocalizedClientLink
-                  className="hover:text-ui-fg-base"
+                  key={item.name}
+                  href={item.link}
+                  className="text-lg font-medium text-gray-900 hover:text-[#D4AF37] transition-colors py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.name}
+                </LocalizedClientLink>
+              ))}
+
+              {/* Mobile Utility Links */}
+              <div className="border-t border-gray-200 pt-4 mt-2 flex flex-col gap-4">
+                <LocalizedClientLink
                   href="/search"
-                  scroll={false}
-                  data-testid="nav-search-link"
+                  className="text-lg font-medium text-gray-900 hover:text-[#D4AF37] transition-colors flex items-center gap-2 py-2"
+                  onClick={() => setIsMenuOpen(false)}
                 >
-                  Search
+                  <IconSearch className="h-5 w-5" stroke={1.5} />
+                  Caută
                 </LocalizedClientLink>
-              )}
-              <LocalizedClientLink
-                className="hover:text-ui-fg-base"
-                href="/account"
-                data-testid="nav-account-link"
-              >
-                Account
-              </LocalizedClientLink>
-            </div>
-            <Suspense
-              fallback={
                 <LocalizedClientLink
-                  className="hover:text-ui-fg-base flex gap-2"
-                  href="/cart"
-                  data-testid="nav-cart-link"
+                  href="/account"
+                  className="text-lg font-medium text-gray-900 hover:text-[#D4AF37] transition-colors flex items-center gap-2 py-2"
+                  onClick={() => setIsMenuOpen(false)}
                 >
-                  Cart (0)
+                  <IconUser className="h-5 w-5" stroke={1.5} />
+                  Contul Meu
                 </LocalizedClientLink>
-              }
-            >
-              <CartButton />
-            </Suspense>
-          </div>
-        </nav>
-      </header>
-    </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.header>
   )
 }
+
+export default Nav
