@@ -8,9 +8,6 @@ const categoryImages: Record<string, string> = {
   "verighete": "/images/verighete.webp",
   "inele-de-logodna": "/images/inele-de-logodna.webp", 
   "bijuterii": "/images/bijuterii.webp",
-  "cercei": "/images/golden-hero.webp",
-  "coliere": "/images/golden-hero.webp",
-  "bratari": "/images/golden-hero.webp"
 }
 
 const FeaturedCategories = async () => {

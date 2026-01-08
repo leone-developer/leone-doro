@@ -1,5 +1,5 @@
+import { clx, Text } from "@medusajs/ui"
 import { Label } from "@modules/common/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@modules/common/components/ui/radio-group"
 
 type FilterRadioGroupProps = {
   title: string
@@ -20,25 +20,39 @@ const FilterRadioGroup = ({
   "data-testid": dataTestId,
 }: FilterRadioGroupProps) => {
   return (
-    <div className="flex gap-x-3 flex-col gap-y-3">
-      <h3 className="text-sm font-medium text-muted-foreground mb-2">{title}</h3>
-      <RadioGroup
+    <div className="flex flex-col gap-y-1">
+      <Text className="text-xs uppercase tracking-widest font-serif text-black mb-1">
+        {title}
+      </Text>
+      <div
         data-testid={dataTestId}
-        value={value}
-        onValueChange={handleChange}
+        className="flex flex-col gap-y-1"
+        role="radiogroup"
       >
         {items?.map((i) => (
-          <div key={i.value} className="flex items-center space-x-2">
-            <RadioGroupItem value={i.value} id={i.value} />
+          <button
+            key={i.value}
+            type="button"
+            className="flex items-center text-left"
+            onClick={() => handleChange(i.value)}
+            role="radio"
+            aria-checked={i.value === value ? "true" : "false"}
+          >
             <Label
               htmlFor={i.value}
-              className="text-sm font-normal cursor-pointer text-foreground"
+              className={clx(
+                "text-sm cursor-pointer transition-all duration-200",
+                {
+                  "text-black font-medium underline decoration-[#D4AF37] underline-offset-4": i.value === value,
+                  "text-ui-fg-muted hover:text-black": i.value !== value,
+                }
+              )}
             >
               {i.label}
             </Label>
-          </div>
+          </button>
         ))}
-      </RadioGroup>
+      </div>
     </div>
   )
 }

@@ -28,10 +28,10 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
   return (
     <div
       className={clx(
-        "relative w-full overflow-hidden border border-[#D4AF37] border-opacity-40 rounded-lg group bg-[#F9F9F9]", // Removed shadow, rounded corners, adding gray bg for loading
+        "relative w-full overflow-hidden group",
         className,
         {
-          "aspect-[5/4]": !size || size !== "square", // Slight portrait, but closer to square (Luxury standard)
+          "aspect-[5/4]": !size || size !== "square",
           "aspect-[1/1]": size === "square",
           "w-[180px]": size === "small",
           "w-[290px]": size === "medium",

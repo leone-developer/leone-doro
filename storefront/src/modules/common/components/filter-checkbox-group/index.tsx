@@ -1,7 +1,7 @@
 "use client"
 
+import { clx, Text } from "@medusajs/ui"
 import { Label } from "@modules/common/components/ui/label"
-import { Checkbox } from "@modules/common/components/ui/checkbox"
 
 type FilterCheckboxGroupProps = {
   title: string
@@ -22,28 +22,35 @@ const FilterCheckboxGroup = ({
   "data-testid": dataTestId,
 }: FilterCheckboxGroupProps) => {
   return (
-    <div className="flex gap-x-3 flex-col gap-y-3">
-      <h3 className="text-sm font-medium text-muted-foreground mb-2">{title}</h3>
-      <div data-testid={dataTestId} className="flex flex-col gap-y-3">
+    <div className="flex flex-col gap-y-1">
+      <Text className="text-xs uppercase tracking-widest font-serif text-black mb-1">
+        {title}
+      </Text>
+      <div data-testid={dataTestId} className="flex flex-col gap-y-1">
         {items?.map((i) => {
           const isSelected = selectedValues.includes(i.value)
           return (
-            <div
+            <button
               key={i.value}
-              className="flex items-center space-x-2"
+              type="button"
+              className="flex items-center text-left w-fit"
+              onClick={() => handleChange(i.value)}
+              role="checkbox"
+              aria-checked={isSelected}
             >
-              <Checkbox
-                checked={isSelected}
-                id={i.value}
-                onCheckedChange={() => handleChange(i.value)}
-              />
               <Label
                 htmlFor={i.value}
-                className="text-sm font-normal cursor-pointer text-foreground"
+                className={clx(
+                  "text-sm cursor-pointer transition-all duration-200",
+                  {
+                    "text-black font-medium underline decoration-[#D4AF37] underline-offset-4": isSelected,
+                    "text-ui-fg-muted hover:text-black": !isSelected,
+                  }
+                )}
               >
                 {i.label}
               </Label>
-            </div>
+            </button>
           )
         })}
       </div>

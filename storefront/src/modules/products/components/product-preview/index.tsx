@@ -39,7 +39,7 @@ export default async function ProductPreview({
         - We pass 'images={product.images}' to enable the hover effect 
         - The aspect ratio is handled inside Thumbnail, but we ensure full width here 
       */}
-      <div className="w-full relative overflow-hidden bg-[#F9F9F9]">
+      <div className="w-full relative overflow-hidden">
         <Thumbnail
           thumbnail={product.thumbnail}
           images={product.images}
@@ -53,11 +53,11 @@ export default async function ProductPreview({
 
       {/* 
         2. Text Content 
-        - Centered alignment
+        - Left alignment for Gallery style
         - Serif font for Title
         - Gold accent on hover
       */}
-      <div className="flex flex-col items-center text-center mt-4 space-y-1">
+      <div className="flex flex-col mt-4 space-y-1">
         <Text 
           className="font-serif text-base text-gray-900 group-hover:text-[#D4AF37] transition-colors duration-300 line-clamp-2"
           style={{ letterSpacing: '0.02em' }}

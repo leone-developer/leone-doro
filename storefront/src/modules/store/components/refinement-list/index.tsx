@@ -1,12 +1,13 @@
 "use client"
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useCallback } from "react"
+import { useCallback, useState } from "react"
 
 import SortProducts, { SortOptions } from "./sort-products"
 import FilterCheckboxGroup from "@modules/common/components/filter-checkbox-group"
 import { HttpTypes } from "@medusajs/types"
 import FilterRadioGroup from "@modules/common/components/filter-radio-group"
+import { clx, Text } from "@medusajs/ui"
 
 type RefinementListProps = {
   sortBy: SortOptions
@@ -111,27 +112,47 @@ const RefinementList = ({ sortBy, tags, 'data-testid': dataTestId }: RefinementL
 
   const selectedTags = searchParams.getAll("tag_id")
   const selectedPrice = searchParams.get("price_range") || undefined
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <div className="flex small:flex-col gap-12 py-4 mb-8 small:px-0 pl-6 small:min-w-[250px] small:ml-[1.675rem]">
-      <SortProducts sortBy={sortBy} setQueryParams={setQueryParams} data-testid={dataTestId} />
+    <div className="flex flex-col small:min-w-[250px] small:ml-[1.675rem] small:sticky small:top-24 small:h-fit">
+      <div 
+        className="flex small:hidden py-4 mb-4 border-b border-ui-border-base items-center justify-between cursor-pointer" 
+        onClick={() => setIsOpen(!isOpen)}
+      >
+          <Text className="text-sm uppercase tracking-widest text-black font-serif">Filtrare și Sortare</Text>
+          <span className="text-xl transition-transform duration-300 text-black" style={{ transform: isOpen ? 'rotate(45deg)' : 'rotate(0deg)' }}>
+            +
+          </span>
+      </div>
       
-      {Object.entries(groupedTags).map(([groupTitle, items]) => (
-        <FilterCheckboxGroup
-            key={groupTitle}
-            title={groupTitle}
-            items={items}
-            selectedValues={selectedTags}
-            handleChange={toggleTag}
-        />
-      ))}
+      <div className={clx(
+        "grid transition-[grid-template-rows] duration-500 ease-in-out small:block",
+        isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+      )}>
+        <div className="overflow-hidden small:overflow-visible">
+          <div className="flex flex-col gap-5 pb-4 mb-4 small:pr-0 pr-4 small:pl-0 pl-0">
+            <SortProducts sortBy={sortBy} setQueryParams={setQueryParams} data-testid={dataTestId} />
+            
+            {Object.entries(groupedTags).map(([groupTitle, items]) => (
+              <FilterCheckboxGroup
+                  key={groupTitle}
+                  title={groupTitle}
+                  items={items}
+                  selectedValues={selectedTags}
+                  handleChange={toggleTag}
+              />
+            ))}
 
-      <FilterRadioGroup
-          title="Preț"
-          items={priceOptions}
-          value={selectedPrice}
-          handleChange={setPriceParam}
-      />
+            <FilterRadioGroup
+                title="Preț"
+                items={priceOptions}
+                value={selectedPrice}
+                handleChange={setPriceParam}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
