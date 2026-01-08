@@ -88,7 +88,27 @@ const RefinementList = ({ sortBy, tags, 'data-testid': dataTestId }: RefinementL
     router.push(`${pathname}?${params.toString()}`, { scroll: false })
   }
 
-  const tagItems = tags?.map(t => ({ value: t.id, label: t.value })) || []
+  // --- Grouping Logic Start ---
+  // We assume tags might be named "Material: Gold", "Gemstone: Ruby" etc. 
+  // OR we just group them purely by value if no prefix exists, 
+  // BUT for a better UX, explicit groups are derived from prefixes.
+  
+  const groupedTags = (tags || []).reduce((acc, t) => {
+    const parts = t.value.split(":")
+    if (parts.length > 1) {
+      const group = parts[0].trim()
+      const label = parts[1].trim()
+      
+      if (!acc[group]) acc[group] = []
+      acc[group].push({ value: t.id, label: label })
+    } else {
+      // Tags without prefix go to "Other" or "Filters"
+      if (!acc["Filters"]) acc["Filters"] = []
+      acc["Filters"].push({ value: t.id, label: t.value })
+    }
+    return acc
+  }, {} as Record<string, { value: string, label: string }[]>)
+
   const selectedTags = searchParams.getAll("tag_id")
   const selectedPrice = searchParams.get("price_range") || undefined
 
@@ -96,14 +116,15 @@ const RefinementList = ({ sortBy, tags, 'data-testid': dataTestId }: RefinementL
     <div className="flex small:flex-col gap-12 py-4 mb-8 small:px-0 pl-6 small:min-w-[250px] small:ml-[1.675rem]">
       <SortProducts sortBy={sortBy} setQueryParams={setQueryParams} data-testid={dataTestId} />
       
-      {tagItems.length > 0 && (
+      {Object.entries(groupedTags).map(([groupTitle, items]) => (
         <FilterCheckboxGroup
-            title="Filters"
-            items={tagItems}
+            key={groupTitle}
+            title={groupTitle}
+            items={items}
             selectedValues={selectedTags}
             handleChange={toggleTag}
         />
-      )}
+      ))}
 
       <FilterRadioGroup
           title="Preț"

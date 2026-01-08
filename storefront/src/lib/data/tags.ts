@@ -9,5 +9,12 @@ export const getTags = cache(async function () {
       "Content-Type": "application/json",
     },
   })
-    .then(({ product_tags }) => product_tags)
+    .then(({ product_tags }) => {
+      console.log("Fetched tags:", product_tags)
+      return product_tags
+    })
+    .catch((err) => {
+        console.error("Error fetching tags:", err)
+        return []
+    })
 })
