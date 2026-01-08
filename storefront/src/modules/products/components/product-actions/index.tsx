@@ -8,6 +8,8 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { useIntersection } from "@lib/hooks/use-in-view"
 import Divider from "@modules/common/components/divider"
 import OptionSelect from "@modules/products/components/product-actions/option-select"
+import RingSizeSelector from "../ring-size-selector"
+import Modal from "@modules/common/components/modal"
 
 import MobileActions from "./mobile-actions"
 import ProductPrice from "../product-price"
@@ -29,14 +31,26 @@ const optionsAsKeymap = (variantOptions: any) => {
   }, {})
 }
 
-export default function ProductActions({
+const ProductActions = ({
   product,
   region,
   disabled,
-}: ProductActionsProps) {
+}: ProductActionsProps) => {
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [isAdding, setIsAdding] = useState(false)
+  const [showSizeGuide, setShowSizeGuide] = useState(false)
+  const [ringSize, setRingSize] = useState<string | null>(null)
   const countryCode = useParams().countryCode as string
+
+  // Check if product is a ring based on metadata
+  const isRing = useMemo(() => {
+    return product.type?.value?.toLowerCase() === "ring" || 
+           product.tags?.some(tag => tag.value?.toLowerCase() === "ring" || tag.value?.toLowerCase() === "inel") ||
+           product.categories?.some(cat => cat.name?.toLowerCase().includes("inele") || cat.name?.toLowerCase().includes("verighete")) ||
+           product.subtitle?.toLowerCase().includes("inel") ||
+           product.title?.toLowerCase().includes("inel") ||
+           product.title?.toLowerCase().includes("verighet")
+  }, [product])
 
   // If there is only 1 variant, preselect the options
   useEffect(() => {
@@ -97,12 +111,19 @@ export default function ProductActions({
   const handleAddToCart = async () => {
     if (!selectedVariant?.id) return null
 
+    if (isRing && !ringSize) {
+      // Don't add if ring size is mandatory but not selected
+      // You might want to add error state or toast here
+      return
+    }
+
     setIsAdding(true)
 
     await addToCart({
       variantId: selectedVariant.id,
       quantity: 1,
       countryCode,
+      metadata: isRing && ringSize ? { "Marime Inel": ringSize } : undefined
     })
 
     setIsAdding(false)
@@ -115,6 +136,11 @@ export default function ProductActions({
           {(product.variants?.length ?? 0) > 1 && (
             <div className="flex flex-col gap-y-4">
               {(product.options || []).map((option) => {
+                const title = option.title ?? ""
+                // Don't render size option specifically if we handle it separately, 
+                // but checking metadata approach means we mostly rely on isRing check.
+                // Keeping clean option rendering.
+                
                 return (
                   <div key={option.id}>
                     <OptionSelect
@@ -131,23 +157,35 @@ export default function ProductActions({
               <Divider />
             </div>
           )}
+          
+          {isRing && (
+             <div className="mb-4">
+                <RingSizeSelector 
+                  selectedSize={ringSize} 
+                  onSizeChange={setRingSize} 
+                  onOpenGuide={() => setShowSizeGuide(true)} 
+                />
+             </div>
+          )}
         </div>
 
         <ProductPrice product={product} variant={selectedVariant} />
 
         <Button
           onClick={handleAddToCart}
-          disabled={!inStock || !selectedVariant || !!disabled || isAdding}
+          disabled={!inStock || !selectedVariant || !!disabled || isAdding || (isRing && !ringSize)}
           variant="primary"
           className="w-full h-10"
           isLoading={isAdding}
           data-testid="add-product-button"
         >
           {!selectedVariant
-            ? "Select variant"
+            ? "Selectează varianta"
             : !inStock
-            ? "Out of stock"
-            : "Add to cart"}
+            ? "Stoc epuizat"
+            : (isRing && !ringSize) 
+              ? "Selectează mărimea" 
+              : "Adaugă în coș"}
         </Button>
         <MobileActions
           product={product}
@@ -159,8 +197,29 @@ export default function ProductActions({
           isAdding={isAdding}
           show={!inView}
           optionsDisabled={!!disabled || isAdding}
+          onOpenGuide={() => setShowSizeGuide(true)}
+          isRing={isRing}
+          ringSize={ringSize}
+          setRingSize={setRingSize}
         />
       </div>
+
+      <Modal isOpen={showSizeGuide} close={() => setShowSizeGuide(false)}>
+        <div className="flex flex-col gap-y-4 p-4 text-center">
+           <h2 className="text-xl font-medium font-serif">Ghid de Mărimi</h2>
+           <p className="text-gray-600">
+             Aici va fi tabelul cu mărimile inelelor (diametru interior vs circumferință).
+           </p>
+           <button 
+             onClick={() => setShowSizeGuide(false)}
+             className="mt-4 text-sm underline text-gray-500"
+           >
+             Închide
+           </button>
+        </div>
+      </Modal>
     </>
   )
 }
+
+export default ProductActions

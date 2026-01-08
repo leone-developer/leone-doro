@@ -9,6 +9,7 @@ import X from "@modules/common/icons/x"
 import { getProductPrice } from "@lib/util/get-product-price"
 import OptionSelect from "./option-select"
 import { HttpTypes } from "@medusajs/types"
+import RingSizeSelector from "../ring-size-selector"
 
 type MobileActionsProps = {
   product: HttpTypes.StoreProduct
@@ -20,6 +21,10 @@ type MobileActionsProps = {
   isAdding?: boolean
   show: boolean
   optionsDisabled: boolean
+  onOpenGuide?: () => void
+  isRing?: boolean
+  ringSize?: string | null
+  setRingSize?: (size: string) => void
 }
 
 const MobileActions: React.FC<MobileActionsProps> = ({
@@ -32,6 +37,10 @@ const MobileActions: React.FC<MobileActionsProps> = ({
   isAdding,
   show,
   optionsDisabled,
+  onOpenGuide,
+  isRing,
+  ringSize,
+  setRingSize,
 }) => {
   const { state, open, close } = useToggleState()
 
@@ -182,6 +191,16 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                             </div>
                           )
                         })}
+                      </div>
+                    )}
+                    
+                    {isRing && setRingSize && (
+                      <div className="mt-4">
+                        <RingSizeSelector 
+                          selectedSize={ringSize || null} 
+                          onSizeChange={setRingSize} 
+                          onOpenGuide={onOpenGuide} 
+                        />
                       </div>
                     )}
                   </div>

@@ -30,21 +30,43 @@ export default async function ProductPreview({
   })
 
   return (
-    <LocalizedClientLink href={`/products/${product.handle}`} className="group">
-      <div data-testid="product-wrapper">
+    <LocalizedClientLink
+      href={`/produse/${product.handle}`}
+      className="group block h-full w-full"
+    >
+      {/* 
+        1. Thumbnail Wrapper 
+        - We pass 'images={product.images}' to enable the hover effect 
+        - The aspect ratio is handled inside Thumbnail, but we ensure full width here 
+      */}
+      <div className="w-full relative overflow-hidden bg-[#F9F9F9]">
         <Thumbnail
           thumbnail={product.thumbnail}
           images={product.images}
           size="full"
           isFeatured={isFeatured}
+          className="rounded-none" // Hard corners = Luxury
         />
-        <div className="flex txt-compact-medium mt-4 justify-between">
-          <Text className="text-ui-fg-subtle" data-testid="product-title">
-            {product.title}
-          </Text>
-          <div className="flex items-center gap-x-2">
-            {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
-          </div>
+        
+        {/* Optional: Add a subtle overlay or badge here if needed in future */}
+      </div>
+
+      {/* 
+        2. Text Content 
+        - Centered alignment
+        - Serif font for Title
+        - Gold accent on hover
+      */}
+      <div className="flex flex-col items-center text-center mt-4 space-y-1">
+        <Text 
+          className="font-serif text-base text-gray-900 group-hover:text-[#D4AF37] transition-colors duration-300 line-clamp-2"
+          style={{ letterSpacing: '0.02em' }}
+        >
+          {product.title}
+        </Text>
+        
+        <div className="flex items-center gap-x-2">
+          {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
         </div>
       </div>
     </LocalizedClientLink>

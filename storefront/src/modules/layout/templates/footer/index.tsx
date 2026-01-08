@@ -26,7 +26,7 @@ export default function Footer() {
                 Livrare Asigurată
               </h3>
               <p className="text-sm text-gray-400">
-                Transport gratuit și asigurat pentru orice comandă.
+                Transport asigurat pentru orice comandă.
               </p>
             </div>
           </div>
@@ -71,24 +71,31 @@ export default function Footer() {
               Leone D&apos;Oro
             </LocalizedClientLink>
             <div className="flex flex-col gap-y-2 text-sm text-gray-400">
-              <LocalizedClientLink
+              <Image
+                src="/images/logo.png"
+                alt="Leone D'Oro Logo"
+                width={120}
+                height={40}
+                className="object-contain"
+              />
+              {/* <LocalizedClientLink
                 href="/about"
                 className="hover:text-[#D4AF37] transition-colors"
               >
                 Despre Noi
               </LocalizedClientLink>
               <LocalizedClientLink
-                href="/story"
+                href="/povestea-noastra"
                 className="hover:text-[#D4AF37] transition-colors"
               >
                 Povestea Noastră
               </LocalizedClientLink>
               <LocalizedClientLink
-                href="/certifications"
+                href="/certificari"
                 className="hover:text-[#D4AF37] transition-colors"
               >
                 Certificări
-              </LocalizedClientLink>
+              </LocalizedClientLink> */}
             </div>
           </div>
 
@@ -105,19 +112,19 @@ export default function Footer() {
                 Contact
               </LocalizedClientLink>
               <LocalizedClientLink
-                href="/shipping"
+                href="/livrare"
                 className="hover:text-[#D4AF37] transition-colors"
               >
                 Livrare
               </LocalizedClientLink>
               <LocalizedClientLink
-                href="/returns"
+                href="/returnari"
                 className="hover:text-[#D4AF37] transition-colors"
               >
                 Returnări
               </LocalizedClientLink>
               <LocalizedClientLink
-                href="/warranty"
+                href="/garantie"
                 className="hover:text-[#D4AF37] transition-colors"
               >
                 Garanție
@@ -130,13 +137,13 @@ export default function Footer() {
             <span className="text-base font-medium text-[#D4AF37]">Legal</span>
             <div className="flex flex-col gap-y-2 text-sm text-gray-400">
               <LocalizedClientLink
-                href="/terms"
+                href="/termeni-si-conditii"
                 className="hover:text-[#D4AF37] transition-colors"
               >
                 Termeni și Condiții
               </LocalizedClientLink>
               <LocalizedClientLink
-                href="/privacy"
+                href="/politica-de-confidentialitate"
                 className="hover:text-[#D4AF37] transition-colors"
               >
                 Politica de Confidențialitate
