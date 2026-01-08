@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation"
 import { Suspense } from "react"
+import { getTags } from "@lib/data/tags"
 
 import InteractiveLink from "@modules/common/components/interactive-link"
 import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-grid"
@@ -9,19 +10,25 @@ import PaginatedProducts from "@modules/store/templates/paginated-products"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { HttpTypes } from "@medusajs/types"
 
-export default function CategoryTemplate({
+export default async function CategoryTemplate({
   categories,
   sortBy,
   page,
   countryCode,
+  tagId,
+  priceRange,
 }: {
   categories: HttpTypes.StoreProductCategory[]
   sortBy?: SortOptions
   page?: string
   countryCode: string
+  tagId?: string | string[]
+  priceRange?: string
 }) {
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "created_at"
+  const tags = await getTags()
+  const tagIds = tagId ? (Array.isArray(tagId) ? tagId : [tagId]) : undefined
 
   const category = categories[categories.length - 1]
   const parents = categories.slice(0, categories.length - 1)
@@ -33,7 +40,7 @@ export default function CategoryTemplate({
       className="flex flex-col small:flex-row small:items-start py-6 content-container"
       data-testid="category-container"
     >
-      <RefinementList sortBy={sort} data-testid="sort-by-container" />
+      <RefinementList sortBy={sort} tags={tags} data-testid="sort-by-container" />
       <div className="w-full">
         <div className="flex flex-row mb-8 text-2xl-semi gap-4">
           {parents &&
@@ -75,6 +82,8 @@ export default function CategoryTemplate({
             page={pageNumber}
             categoryId={category.id}
             countryCode={countryCode}
+            tagIds={tagIds}
+            priceRange={priceRange}
           />
         </Suspense>
       </div>

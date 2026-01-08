@@ -98,11 +98,13 @@ export const getProductsListWithSort = cache(async function ({
   queryParams,
   sortBy = "created_at",
   countryCode,
+  priceRange,
 }: {
   page?: number
   queryParams?: HttpTypes.FindParams & HttpTypes.StoreProductParams
   sortBy?: SortOptions
   countryCode: string
+  priceRange?: string
 }): Promise<{
   response: { products: HttpTypes.StoreProduct[]; count: number }
   nextPage: number | null
@@ -121,7 +123,21 @@ export const getProductsListWithSort = cache(async function ({
     countryCode,
   })
 
-  const sortedProducts = sortProducts(products, sortBy)
+  let filteredProducts = products
+
+  if (priceRange) {
+    const [min, max] = priceRange.split("-").map(Number)
+    filteredProducts = products.filter((p) => {
+      // Check if any variant is within range
+      return p.variants?.some((v) => {
+        const price = v.calculated_price?.calculated_amount
+        if (price === undefined || price === null) return false
+        return price >= min && price <= max
+      })
+    })
+  }
+
+  const sortedProducts = sortProducts(filteredProducts, sortBy)
 
   const pageParam = (page - 1) * limit
 
@@ -132,7 +148,7 @@ export const getProductsListWithSort = cache(async function ({
   return {
     response: {
       products: paginatedProducts,
-      count,
+      count: filteredProducts.length,
     },
     nextPage,
     queryParams,

@@ -5,6 +5,7 @@ import Image from "next/image"
 import { IconSearch, IconUser, IconShoppingBag, IconMenu2, IconX } from "@tabler/icons-react"
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "motion/react"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { HttpTypes } from "@medusajs/types"
 
 // Menu items in Romanian
 const menuItems = [
@@ -15,7 +16,7 @@ const menuItems = [
   { name: "Contact", link: "/contact" },
 ]
 
-const Nav = () => {
+const Nav = ({ cart }: { cart?: HttpTypes.StoreCart | null }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const { scrollY } = useScroll()
@@ -116,11 +117,16 @@ const Nav = () => {
           {/* Cart - Always Visible */}
           <LocalizedClientLink
             href="/cart"
-            className="text-gray-900 hover:text-[#D4AF37] transition-colors"
+            className="text-gray-900 hover:text-[#D4AF37] transition-colors relative"
             data-testid="nav-cart-link"
             aria-label="Coș de cumpărături"
           >
             <IconShoppingBag className="h-5 w-5" stroke={1.5} />
+            {(cart?.items?.length ?? 0) > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#D4AF37] text-[10px] font-medium text-white ring-2 ring-white">
+                {cart?.items?.reduce((acc, item) => acc + item.quantity, 0)}
+              </span>
+            )}
           </LocalizedClientLink>
         </div>
       </nav>

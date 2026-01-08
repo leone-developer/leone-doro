@@ -15,6 +15,7 @@ import MobileActions from "./mobile-actions"
 import ProductPrice from "../product-price"
 import { addToCart } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
+import { toast } from "sonner"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -124,6 +125,14 @@ const ProductActions = ({
       quantity: 1,
       countryCode,
       metadata: isRing && ringSize ? { "Marime Inel": ringSize } : undefined
+    })
+
+    toast.success("Produs adăugat în coș", {
+      description: `${product.title} - ${selectedVariant.title}`,
+      action: {
+         label: "Vezi coșul",
+         onClick: () => window.location.href = "/cart"
+      }
     })
 
     setIsAdding(false)
