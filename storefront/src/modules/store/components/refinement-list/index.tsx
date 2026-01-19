@@ -12,36 +12,17 @@ import { clx, Text } from "@medusajs/ui"
 type RefinementListProps = {
   sortBy: SortOptions
   tags?: HttpTypes.StoreProductTag[]
-  search?: boolean
   'data-testid'?: string
 }
 
-const priceOptions = [
-  {
-    value: "0-100",
-    label: "Sub 100 RON",
-  },
-  {
-    value: "100-250",
-    label: "100 - 250 RON",
-  },
-  {
-    value: "250-500",
-    label: "250 - 500 RON",
-  },
-  {
-    value: "500-1000",
-    label: "500 - 1000 RON",
-  },
-  {
-    value: "1000-2500",
-    label: "1000 - 2500 RON",
-  },
-  {
-    value: "2500-100000",
-    label: "2500+ RON",
-  },
-]
+  const priceOptions = [                                                                                                                                                               
+    { value: "0-500", label: "Sub 500 RON" },                                                                                                                                          
+    { value: "500-1000", label: "500 - 1.000 RON" },                                                                                                                                   
+    { value: "1000-2500", label: "1.000 - 2.500 RON" },                                                                                                                                
+    { value: "2500-5000", label: "2.500 - 5.000 RON" },                                                                                                                                
+    { value: "5000-10000", label: "5.000 - 10.000 RON" },                                                                                                                              
+    { value: "10000-100000", label: "10.000+ RON" },                                                                                                                                   
+  ]    
 
 const RefinementList = ({ sortBy, tags, 'data-testid': dataTestId }: RefinementListProps) => {
   const router = useRouter()

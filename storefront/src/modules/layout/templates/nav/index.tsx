@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
-import { IconSearch, IconUser, IconShoppingBag, IconMenu2, IconX } from "@tabler/icons-react"
+import { IconUser, IconShoppingBag, IconMenu2, IconX } from "@tabler/icons-react"
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "motion/react"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { HttpTypes } from "@medusajs/types"
@@ -93,17 +93,6 @@ const Nav = ({ cart }: { cart?: HttpTypes.StoreCart | null }) => {
 
         {/* Utility Icons - Right */}
         <div className="flex items-center gap-4 small:gap-6 small:flex-1 justify-end">
-          {/* Search - Desktop Only */}
-          <LocalizedClientLink
-            href="/search"
-            className="hidden small:block text-gray-900 hover:text-[#D4AF37] transition-colors"
-            scroll={false}
-            data-testid="nav-search-link"
-            aria-label="Caută bijuterii"
-          >
-            <IconSearch className="h-5 w-5" stroke={1.5} />
-          </LocalizedClientLink>
-
           {/* Account - Desktop Only */}
           <LocalizedClientLink
             href="/account"
@@ -155,14 +144,6 @@ const Nav = ({ cart }: { cart?: HttpTypes.StoreCart | null }) => {
 
               {/* Mobile Utility Links */}
               <div className="border-t border-gray-200 pt-4 mt-2 flex flex-col gap-4">
-                <LocalizedClientLink
-                  href="/search"
-                  className="text-lg font-medium text-gray-900 hover:text-[#D4AF37] transition-colors flex items-center gap-2 py-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <IconSearch className="h-5 w-5" stroke={1.5} />
-                  Caută
-                </LocalizedClientLink>
                 <LocalizedClientLink
                   href="/account"
                   className="text-lg font-medium text-gray-900 hover:text-[#D4AF37] transition-colors flex items-center gap-2 py-2"

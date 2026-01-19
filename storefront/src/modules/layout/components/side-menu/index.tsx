@@ -14,7 +14,6 @@ const SideMenuItems = {
   "Colecții Speciale": "/collections/speciale",
   "Despre Noi": "/despre-noi",
   "Contact": "/contact",
-  "Caută": "/search",
   "Contul Meu": "/account",
   "Coș": "/cart",
 }

@@ -1,8 +1,12 @@
-# Environment Variables - Cloudflare R2 Storage
+# Environment Variables - Leone D'Oro Infrastructure
 
-This document outlines the environment variables needed for Cloudflare R2 storage integration.
+This document outlines environment variables for the Leone D'Oro MedusaJS e-commerce platform.
 
-## Backend (Railway)
+---
+
+## Cloudflare R2 Storage
+
+### Backend (Railway)
 
 Add these environment variables to your Railway backend service:
 
@@ -24,7 +28,7 @@ R2_PUBLIC_URL=https://pub-<id>.r2.dev
 | `R2_ENDPOINT` | R2 S3 API endpoint (includes account ID) | `https://abc123.r2.cloudflarestorage.com` |
 | `R2_PUBLIC_URL` | Public URL for accessing files (r2.dev subdomain or custom domain) | `https://pub-abc123.r2.dev` |
 
-## Storefront (Railway / Vercel)
+### Storefront (Vercel)
 
 Add this environment variable to your storefront deployment:
 
@@ -36,22 +40,46 @@ This must match the `R2_PUBLIC_URL` from the backend. It's used for Next.js imag
 
 ---
 
-## Obsolete Variables (Remove These)
+## Search Configuration
 
-After migrating to R2, remove these old MinIO variables from Railway:
+**Important:** Product search now uses Postgres full-text search, which is built into MedusaJS. No additional environment variables are needed for search functionality - it works through the standard Medusa API.
 
-### Backend
+Search goes through:
+- Backend: Standard `sdk.store.product.list({ q: "search term" })` call
+- Storefront: Uses `NEXT_PUBLIC_MEDUSA_BACKEND_URL` (already configured)
+
+---
+
+## Obsolete Variables (REMOVE THESE)
+
+After the infrastructure optimizations, remove these old variables:
+
+### Backend (Railway)
+
+**MinIO (replaced by R2):**
 - `MINIO_ENDPOINT`
 - `MINIO_ACCESS_KEY`
 - `MINIO_SECRET_KEY`
 - `MINIO_BUCKET`
 
-### Storefront
+**MeiliSearch (replaced by Postgres full-text search):**
+- `MEILISEARCH_HOST`
+- `MEILISEARCH_ADMIN_KEY`
+
+### Storefront (Vercel)
+
+**MinIO (replaced by R2):**
 - `NEXT_PUBLIC_MINIO_ENDPOINT`
+
+**MeiliSearch (no longer needed):**
+- `NEXT_PUBLIC_SEARCH_ENDPOINT`
+- `NEXT_PUBLIC_SEARCH_API_KEY`
+- `MEILISEARCH_API_KEY`
+- `NEXT_PUBLIC_INDEX_NAME`
 
 ---
 
-## Cloudflare Dashboard Setup
+## Cloudflare R2 Setup
 
 ### 1. Create R2 Bucket
 
@@ -89,9 +117,9 @@ After migrating to R2, remove these old MinIO variables from Railway:
 
 ---
 
-## Verification Checklist
+## Verification Checklists
 
-After setting up:
+### R2 Storage
 
 - [ ] Backend can upload images to R2 (test via Medusa admin)
 - [ ] Uploaded images are publicly accessible via R2_PUBLIC_URL
@@ -99,6 +127,15 @@ After setting up:
 - [ ] Product images load properly
 - [ ] Category images load properly
 - [ ] No console errors related to image loading
+
+### Search Functionality
+
+- [ ] Basic keyword search works (e.g., "gold", "ring", "necklace")
+- [ ] Search returns relevant results
+- [ ] Category filtering works alongside search
+- [ ] Empty search shows all products
+- [ ] No console errors related to search
+- [ ] Search performance is acceptable (< 500ms)
 
 ---
 
@@ -113,6 +150,12 @@ After setting up:
 - Verify all R2 environment variables are set
 - Check that the API token has write permissions for the bucket
 - Ensure the endpoint URL is correct (includes account ID)
+
+### Search not returning results
+- Verify the backend is properly connected to Postgres
+- Check that products exist in the database
+- Verify the `q` parameter is being passed correctly in API calls
+- Check backend logs for any search-related errors
 
 ### CORS issues
 R2 handles CORS automatically for public buckets. If you experience issues:
