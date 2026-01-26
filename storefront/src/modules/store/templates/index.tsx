@@ -1,5 +1,4 @@
 import { Suspense } from "react"
-import { getTags } from "@lib/data/tags"
 
 import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-grid"
 import RefinementList from "@modules/store/components/refinement-list"
@@ -11,26 +10,22 @@ const StoreTemplate = async ({
   sortBy,
   page,
   countryCode,
-  tagId,
   priceRange,
 }: {
   sortBy?: SortOptions
   page?: string
   countryCode: string
-  tagId?: string | string[]
   priceRange?: string
 }) => {
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "created_at"
-  const tags = await getTags()
-  const tagIds = tagId ? (Array.isArray(tagId) ? tagId : [tagId]) : undefined
 
   return (
     <div
       className="flex flex-col small:flex-row small:items-start py-6 content-container"
       data-testid="category-container"
     >
-      <RefinementList sortBy={sort} tags={tags} />
+      <RefinementList sortBy={sort} />
       <div className="w-full">
         <div className="mb-8 text-2xl-semi">
           <h1 data-testid="store-page-title" className="font-serif">Toate produsele</h1>
@@ -40,7 +35,6 @@ const StoreTemplate = async ({
             sortBy={sort}
             page={pageNumber}
             countryCode={countryCode}
-            tagIds={tagIds}
             priceRange={priceRange}
           />
         </Suspense>

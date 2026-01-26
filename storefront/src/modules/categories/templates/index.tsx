@@ -1,8 +1,6 @@
 import { notFound } from "next/navigation"
 import { Suspense } from "react"
-import { getTags } from "@lib/data/tags"
 
-import InteractiveLink from "@modules/common/components/interactive-link"
 import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-grid"
 import RefinementList from "@modules/store/components/refinement-list"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
@@ -27,23 +25,20 @@ export default async function CategoryTemplate({
   sortBy,
   page,
   countryCode,
-  tagId,
   priceRange,
 }: {
   categories: HttpTypes.StoreProductCategory[]
   sortBy?: SortOptions
   page?: string
   countryCode: string
-  tagId?: string | string[]
   priceRange?: string
 }) {
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "created_at"
-  const tags = await getTags()
-  const tagIds = tagId ? (Array.isArray(tagId) ? tagId : [tagId]) : undefined
 
   const category = categories[categories.length - 1]
   const parents = categories.slice(0, categories.length - 1)
+  const hasSubcategories = category.category_children && category.category_children.length > 0
 
   if (!category || !countryCode) notFound()
 
@@ -53,7 +48,7 @@ export default async function CategoryTemplate({
       data-testid="category-container"
     >
       <div className="hidden small:block">
-        <RefinementList sortBy={sort} tags={tags} data-testid="sort-by-container" />
+        <RefinementList sortBy={sort} hasSubcategories={hasSubcategories} data-testid="sort-by-container" />
       </div>
       <div className="w-full">
         <div className="flex flex-row mb-8 text-2xl-semi gap-4 items-end">
@@ -79,7 +74,7 @@ export default async function CategoryTemplate({
         )}
         
         <div className="block small:hidden mb-6">
-           <RefinementList sortBy={sort} tags={tags} data-testid="sort-by-container-mobile" />
+           <RefinementList sortBy={sort} hasSubcategories={hasSubcategories} data-testid="sort-by-container-mobile" />
         </div>
 
         {category.category_children && (
@@ -102,7 +97,6 @@ export default async function CategoryTemplate({
             page={pageNumber}
             categoryId={category.id}
             countryCode={countryCode}
-            tagIds={tagIds}
             priceRange={priceRange}
           />
         </Suspense>
