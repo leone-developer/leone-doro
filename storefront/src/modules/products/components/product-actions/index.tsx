@@ -9,6 +9,7 @@ import { useIntersection } from "@lib/hooks/use-in-view"
 import Divider from "@modules/common/components/divider"
 import OptionSelect from "@modules/products/components/product-actions/option-select"
 import RingSizeSelector from "../ring-size-selector"
+import VerigheteConfigurator from "../verighete-configurator"
 import Modal from "@modules/common/components/modal"
 
 import MobileActions from "./mobile-actions"
@@ -43,15 +44,22 @@ const ProductActions = ({
   const [ringSize, setRingSize] = useState<string | null>(null)
   const countryCode = useParams().countryCode as string
 
-  // Check if product is a ring based on metadata
-  const isRing = useMemo(() => {
-    return product.type?.value?.toLowerCase() === "ring" || 
-           product.tags?.some(tag => tag.value?.toLowerCase() === "ring" || tag.value?.toLowerCase() === "inel") ||
-           product.categories?.some(cat => cat.name?.toLowerCase().includes("inele") || cat.name?.toLowerCase().includes("verighete")) ||
-           product.subtitle?.toLowerCase().includes("inel") ||
-           product.title?.toLowerCase().includes("inel") ||
-           product.title?.toLowerCase().includes("verighet")
+  // Check if product is a verighete (wedding ring pair)
+  const isVerighete = useMemo(() => {
+    return product.categories?.some(
+      (cat) => cat.handle === "verighete" || cat.name?.toLowerCase() === "verighete"
+    )
   }, [product])
+
+  // Check if product is a ring based on metadata (but not verighete - they have their own configurator)
+  const isRing = useMemo(() => {
+    if (isVerighete) return false // Verighete have their own configurator
+    return product.type?.value?.toLowerCase() === "ring" ||
+           product.tags?.some(tag => tag.value?.toLowerCase() === "ring" || tag.value?.toLowerCase() === "inel") ||
+           product.categories?.some(cat => cat.name?.toLowerCase().includes("inele")) ||
+           product.subtitle?.toLowerCase().includes("inel") ||
+           product.title?.toLowerCase().includes("inel")
+  }, [product, isVerighete])
 
   // If there is only 1 variant, preselect the options
   useEffect(() => {
@@ -136,6 +144,19 @@ const ProductActions = ({
     })
 
     setIsAdding(false)
+  }
+
+  // Render VerigheteConfigurator for wedding ring pairs
+  if (isVerighete) {
+    return (
+      <div ref={actionsRef}>
+        <VerigheteConfigurator
+          product={product}
+          region={region}
+          disabled={disabled}
+        />
+      </div>
+    )
   }
 
   return (

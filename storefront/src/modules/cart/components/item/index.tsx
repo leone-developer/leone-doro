@@ -72,6 +72,36 @@ const Item = ({ item, type = "full" }: ItemProps) => {
           {item.product_title}
         </Text>
         <LineItemOptions variant={item.variant} data-testid="product-variant" />
+        {/* Verighete Configuration Display */}
+        {item.metadata?.woman_size && (
+          <div className="mt-2 text-xs text-ui-fg-subtle space-y-1">
+            <div className="flex gap-4">
+              <div>
+                <span className="font-medium">Ea:</span> Mărime {item.metadata.woman_size}, {item.metadata.woman_width}
+                {item.metadata.woman_engraving && (
+                  <span className="block text-ui-fg-muted">Gravare: "{item.metadata.woman_engraving}"</span>
+                )}
+              </div>
+              <div>
+                <span className="font-medium">El:</span> Mărime {item.metadata.man_size}, {item.metadata.man_width}
+                {item.metadata.man_engraving && (
+                  <span className="block text-ui-fg-muted">Gravare: "{item.metadata.man_engraving}"</span>
+                )}
+              </div>
+            </div>
+            {item.metadata.total_surcharge > 0 && (
+              <div className="text-[#D4AF37]">
+                +{new Intl.NumberFormat("ro-RO", { style: "currency", currency: "RON", minimumFractionDigits: 0 }).format(item.metadata.total_surcharge as number)} (lățime)
+              </div>
+            )}
+          </div>
+        )}
+        {/* Single ring size display */}
+        {item.metadata?.["Marime Inel"] && !item.metadata?.woman_size && (
+          <Text className="text-xs text-ui-fg-subtle mt-1">
+            Mărime: {item.metadata["Marime Inel"]}
+          </Text>
+        )}
       </Table.Cell>
 
       {type === "full" && (
