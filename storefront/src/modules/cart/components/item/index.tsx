@@ -48,12 +48,13 @@ const Item = ({ item, type = "full" }: ItemProps) => {
 
   return (
     <Table.Row className="w-full" data-testid="product-row">
-      <Table.Cell className="!pl-0 p-4 w-24">
+      {/* Thumbnail */}
+      <Table.Cell className="!pl-0 py-4 pr-4 w-20 small:w-24 align-top">
         <LocalizedClientLink
           href={`/produse/${handle}`}
           className={clx("flex", {
             "w-16": type === "preview",
-            "small:w-24 w-12": type === "full",
+            "w-16 small:w-20": type === "full",
           })}
         >
           <Thumbnail
@@ -64,98 +65,130 @@ const Item = ({ item, type = "full" }: ItemProps) => {
         </LocalizedClientLink>
       </Table.Cell>
 
-      <Table.Cell className="text-left">
+      {/* Product Info - includes mobile quantity controls */}
+      <Table.Cell className="text-left align-top py-4">
         <Text
-          className="txt-medium-plus text-ui-fg-base"
+          className="txt-medium-plus text-ui-fg-base line-clamp-2 text-sm small:text-base"
           data-testid="product-title"
         >
           {item.product_title}
         </Text>
         <LineItemOptions variant={item.variant} data-testid="product-variant" />
+
         {/* Verighete Configuration Display */}
         {item.metadata?.woman_size && (
-          <div className="mt-2 text-xs text-ui-fg-subtle space-y-1">
-            <div className="flex gap-4">
-              <div>
-                <span className="font-medium">Ea:</span> Mărime {item.metadata.woman_size}, {item.metadata.woman_width}
+          <div className="mt-2 text-xs text-ui-fg-subtle">
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-1 flex-wrap">
+                <span className="font-medium text-pink-500">Ea:</span>
+                <span>{item.metadata.woman_size}</span>
+                <span className="text-ui-fg-muted">•</span>
+                <span>{item.metadata.woman_width}</span>
                 {item.metadata.woman_engraving && (
-                  <span className="block text-ui-fg-muted">Gravare: "{item.metadata.woman_engraving}"</span>
+                  <span className="text-ui-fg-muted italic ml-1">"{item.metadata.woman_engraving}"</span>
                 )}
               </div>
-              <div>
-                <span className="font-medium">El:</span> Mărime {item.metadata.man_size}, {item.metadata.man_width}
+              <div className="flex items-center gap-1 flex-wrap">
+                <span className="font-medium text-blue-500">El:</span>
+                <span>{item.metadata.man_size}</span>
+                <span className="text-ui-fg-muted">•</span>
+                <span>{item.metadata.man_width}</span>
                 {item.metadata.man_engraving && (
-                  <span className="block text-ui-fg-muted">Gravare: "{item.metadata.man_engraving}"</span>
+                  <span className="text-ui-fg-muted italic ml-1">"{item.metadata.man_engraving}"</span>
                 )}
               </div>
             </div>
-            {item.metadata.total_surcharge > 0 && (
-              <div className="text-[#D4AF37]">
+            {(item.metadata.total_surcharge as number) > 0 && (
+              <div className="text-[#D4AF37] mt-1 text-xs font-medium">
                 +{new Intl.NumberFormat("ro-RO", { style: "currency", currency: "RON", minimumFractionDigits: 0 }).format(item.metadata.total_surcharge as number)} (lățime)
               </div>
             )}
           </div>
         )}
+
         {/* Single ring size display */}
         {item.metadata?.["Marime Inel"] && !item.metadata?.woman_size && (
           <Text className="text-xs text-ui-fg-subtle mt-1">
             Mărime: {item.metadata["Marime Inel"]}
           </Text>
         )}
-      </Table.Cell>
 
-      {type === "full" && (
-        <Table.Cell>
-          <div className="flex gap-2 items-center w-28">
+        {/* Mobile: Quantity controls inline */}
+        {type === "full" && (
+          <div className="flex small:hidden items-center gap-2 mt-3 pt-3 border-t border-gray-100">
             <DeleteButton id={item.id} data-testid="product-delete-button" />
             <CartItemSelect
               value={item.quantity}
               onChange={(value) => changeQuantity(parseInt(value.target.value))}
-              className="w-14 h-10 p-4"
+              className="w-14 h-8 text-sm"
               data-testid="product-select-button"
             >
-              {/* TODO: Update this with the v2 way of managing inventory */}
               {Array.from(
-                {
-                  length: Math.min(maxQuantity, 10),
-                },
+                { length: Math.min(maxQuantity, 10) },
                 (_, i) => (
                   <option value={i + 1} key={i}>
                     {i + 1}
                   </option>
                 )
               )}
-
-              <option value={1} key={1}>
-                1
-              </option>
             </CartItemSelect>
             {updating && <Spinner />}
           </div>
+        )}
+        {type === "full" && (
           <ErrorMessage error={error} data-testid="product-error-message" />
-        </Table.Cell>
-      )}
+        )}
+      </Table.Cell>
 
+      {/* Desktop: Quantity controls in separate column */}
       {type === "full" && (
-        <Table.Cell className="hidden small:table-cell">
-          <LineItemUnitPrice item={item} style="tight" />
+        <Table.Cell className="hidden small:table-cell align-top py-4">
+          <div className="flex gap-2 items-center h-6">
+            <DeleteButton id={item.id} data-testid="product-delete-button" />
+            <CartItemSelect
+              value={item.quantity}
+              onChange={(value) => changeQuantity(parseInt(value.target.value))}
+              className="w-14 h-10"
+              data-testid="product-select-button"
+            >
+              {Array.from(
+                { length: Math.min(maxQuantity, 10) },
+                (_, i) => (
+                  <option value={i + 1} key={i}>
+                    {i + 1}
+                  </option>
+                )
+              )}
+            </CartItemSelect>
+            {updating && <Spinner />}
+          </div>
         </Table.Cell>
       )}
 
-      <Table.Cell className="!pr-0">
-        <span
-          className={clx("!pr-0", {
-            "flex flex-col items-end h-full justify-center": type === "preview",
+      {/* Desktop: Unit Price */}
+      {type === "full" && (
+        <Table.Cell className="hidden small:table-cell align-top py-4">
+          <div className="h-6 flex items-center">
+            <LineItemUnitPrice item={item} style="tight" />
+          </div>
+        </Table.Cell>
+      )}
+
+      {/* Total Price */}
+      <Table.Cell className="!pr-0 align-top py-4 text-right">
+        <div
+          className={clx("h-6 flex items-center justify-end", {
+            "h-auto flex-col": type === "preview",
           })}
         >
           {type === "preview" && (
-            <span className="flex gap-x-1 ">
+            <span className="flex gap-x-1">
               <Text className="text-ui-fg-muted">{item.quantity}x </Text>
               <LineItemUnitPrice item={item} style="tight" />
             </span>
           )}
           <LineItemPrice item={item} style="tight" />
-        </span>
+        </div>
       </Table.Cell>
     </Table.Row>
   )

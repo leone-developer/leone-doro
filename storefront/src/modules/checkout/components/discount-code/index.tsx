@@ -57,7 +57,7 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
           <div className="w-full flex items-center">
             <div className="flex flex-col w-full">
               <Heading className="txt-medium mb-2">
-                Promotion(s) applied:
+                Promoții aplicate:
               </Heading>
 
               {promotions.map((promotion) => {
@@ -92,11 +92,6 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
                             </>
                           )}
                         )
-                        {/* {promotion.is_automatic && (
-                          <Tooltip content="This promotion is automatically applied">
-                            <InformationCircleSolid className="inline text-zinc-400" />
-                          </Tooltip>
-                        )} */}
                       </span>
                     </Text>
                     {!promotion.is_automatic && (
@@ -110,10 +105,11 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
                           removePromotionCode(promotion.code)
                         }}
                         data-testid="remove-discount-button"
+                        type="button"
                       >
                         <Trash size={14} />
                         <span className="sr-only">
-                          Remove discount code from order
+                          Elimină codul de reducere
                         </span>
                       </button>
                     )}
