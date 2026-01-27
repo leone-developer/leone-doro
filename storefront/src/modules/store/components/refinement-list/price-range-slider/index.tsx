@@ -44,11 +44,11 @@ const PriceRangeSlider = ({
   }, [onChange])
 
   return (
-    <div className="flex flex-col gap-y-3">
+    <div className="flex flex-col gap-y-3 lg:mr-8">
       <Text className="text-xs uppercase tracking-widest font-serif text-black mb-1">
         Preț
       </Text>
-      <div className="px-3">
+      <div className="">
         <Slider
           min={minPrice}
           max={maxPrice}
